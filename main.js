@@ -1,14 +1,14 @@
-    let isLoggedIn = false;
-    let scripts = [];
-    let freeScripts = [];
+let isLoggedIn = false;
+let scripts = [];
+let freeScripts = [];
 
     // Load scripts when the page loads
-    async function loadScripts() {
-        try {
-            const response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+async function loadScripts() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
             scripts = await response.json();
 
             // Separate free and premium scripts
@@ -56,17 +56,17 @@
         return card;
     }
 
-    // Copy script content to clipboard (Updated)
-    function copyScript(content) {
-        navigator.clipboard.writeText(content)
-            .then(() => {
-                alert('Script copied to clipboard!');
-            })
-            .catch(err => {
-                console.error('Failed to copy script: ', err);
-                alert('Failed to copy script. Please try again.');
-            });
-    }
+function copyScript(content) {
+    console.log('Content to copy:', content);
+    navigator.clipboard.writeText(content)
+        .then(() => {
+            alert('Script copied to clipboard!');
+        })
+        .catch(err => {
+            console.error('Failed to copy script: ', err);
+            alert('Failed to copy script. Please try again.');
+        });
+}
 
     // Open login modal
     function openLoginModal() {
