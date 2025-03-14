@@ -119,10 +119,10 @@
         // Global state
         let isLoggedIn = false;
 
-        // Hardcoded script data (replacing scripts.json)
+        // Hardcoded script data
         const scripts = [
             {
-                name: "Free Script",
+                name: "Free1 Script",
                 description: "A simple free script for everyone.",
                 content: "console.log('Hello from Free Script!');",
                 isPremium: false
@@ -147,50 +147,29 @@
             container.innerHTML = ''; // Clear previous content
 
             // Render free scripts
-            freeScripts.forEach(script => container.appendChild(createScriptCard(script)));
+            freeScripts.forEach(script => {
+                const card = document.createElement('div');
+                card.classList.add('script-card');
+                card.innerHTML = `
+                    <h3>${script.name || 'Unnamed Script'}</h3>
+                    <p>${script.description || 'No description available'}</p>
+                    <button class="copy-btn" data-content="${script.content.replace(/"/g, '&quot;')}" onclick="navigator.clipboard.writeText(this.getAttribute('data-content')).then(() => alert('Script copied to clipboard!')).catch(err => { console.error('Copy failed:', err); alert('Failed to copy script.'); })">Copy Script</button>
+                `;
+                container.appendChild(card);
+            });
 
             // Render premium scripts if logged in
             if (isLoggedIn) {
-                scripts.filter(script => script.isPremium).forEach(script => container.appendChild(createScriptCard(script)));
-            }
-        }
-
-        // Create a script card with copy functionality
-        function createScriptCard(script) {
-            const card = document.createElement('div');
-            card.classList.add('script-card');
-
-            const title = document.createElement('h3');
-            title.textContent = script.name || 'Unnamed Script';
-
-            const description = document.createElement('p');
-            description.textContent = script.description || 'No description available';
-
-            const copyButton = document.createElement('button');
-            copyButton.classList.add('copy-btn');
-            copyButton.textContent = 'Copy Script';
-            copyButton.addEventListener('click', () => {
-                const content = script.content || '';
-                if (!content) {
-                    alert('No script content available to copy.');
-                    console.warn('Missing content for script:', script);
-                    return;
-                }
-                copyToClipboard(content);
-            });
-
-            card.append(title, description, copyButton);
-            return card;
-        }
-
-        // Copy text to clipboard
-        async function copyToClipboard(content) {
-            try {
-                await navigator.clipboard.writeText(content);
-                alert('Script copied to clipboard!');
-            } catch (error) {
-                console.error('Failed to copy to clipboard:', error);
-                alert('Failed to copy script. Check the console for details.');
+                scripts.filter(script => script.isPremium).forEach(script => {
+                    const card = document.createElement('div');
+                    card.classList.add('script-card');
+                    card.innerHTML = `
+                        <h3>${script.name || 'Unnamed Script'}</h3>
+                        <p>${script.description || 'No description available'}</p>
+                        <button class="copy-btn" data-content="${script.content.replace(/"/g, '&quot;')}" onclick="navigator.clipboard.writeText(this.getAttribute('data-content')).then(() => alert('Script copied to clipboard!')).catch(err => { console.error('Copy failed:', err); alert('Failed to copy script.'); })">Copy Script</button>
+                    `;
+                    container.appendChild(card);
+                });
             }
         }
 
@@ -206,7 +185,7 @@
             if (modal) modal.style.display = 'none';
         }
 
-        // Handle login logic (still uses users.json for now)
+        // Handle login logic (still uses users.json)
         async function login() {
             const username = document.getElementById('username')?.value;
             const password = document.getElementById('password')?.value;
