@@ -24,22 +24,6 @@
             margin: 0;
             font-size: 24px;
         }
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: #252525;
-            padding: 10px;
-            border-radius: 8px;
-        }
-        .search-box input {
-            background: none;
-            border: none;
-            outline: none;
-            color: white;
-            padding: 5px;
-            width: 250px;
-            font-size: 16px;
-        }
         .container {
             padding: 30px;
             display: grid;
@@ -104,6 +88,41 @@
         }
     </style>
     <script>
+        let isLoggedIn = false;
+        let scripts = [];
+
+        // Load scripts when the page loads
+        async function loadScripts() {
+            try {
+                let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
+                scripts = await response.json();
+                renderScripts();
+            } catch (error) {
+                console.error("Error loading scripts.json", error);
+            }
+        }
+
+        // Render scripts based on login status
+        function renderScripts() {
+            const container = document.getElementById('content-container');
+            container.innerHTML = ''; // Clear existing content
+
+            scripts.forEach(script => {
+                // Show free scripts to everyone, all scripts to logged-in users
+                if (script.free || isLoggedIn) {
+                    const card = document.createElement('div');
+                    card.classList.add('script-card');
+                    card.innerHTML = `
+                        <h3>${script.name}</h3>
+                        <p>${script.description}</p>
+                        <button class="copy-btn">Copy Script</button>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        // Login function
         async function login() {
             let username = document.getElementById('username').value;
             let password = document.getElementById('password').value;
@@ -116,6 +135,7 @@
                 
                 if (user) {
                     alert("Login successful!");
+                    isLoggedIn = true;
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('content-container').style.display = 'block';
                     
@@ -123,6 +143,7 @@
                         document.getElementById('premium-banner').innerText = "Premium User!";
                         document.getElementById('premium-banner').classList.add("premium");
                     }
+                    renderScripts(); // Re-render scripts after login
                 } else {
                     alert("Invalid credentials!");
                 }
@@ -131,6 +152,9 @@
                 alert("Error logging in. Try again later.");
             }
         }
+
+        // Load scripts on page load
+        window.onload = loadScripts;
     </script>
 </head>
 <body>
@@ -146,22 +170,6 @@
         <button onclick="login()">Login</button>
     </div>
     
-    <div id="content-container" class="container" style="display: none;">
-        <div class="script-card">
-            <h3>Advanced Script 1</h3>
-            <p>Powerful script for enhancing gameplay.</p>
-            <button class="copy-btn">Copy Script</button>
-        </div>
-        <div class="script-card">
-            <h3>Exclusive Script 2</h3>
-            <p>Top-tier automation script with seamless execution.</p>
-            <button class="copy-btn">Copy Script</button>
-        </div>
-        <div class="script-card">
-            <h3>Premium Script 3</h3>
-            <p>Fully optimized and secure script for advanced users.</p>
-            <button class="copy-btn">Copy Script</button>
-        </div>
-    </div>
+    <div id="content-container" class="container"></div>
 </body>
 </html>
