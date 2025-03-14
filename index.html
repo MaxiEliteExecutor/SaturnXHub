@@ -69,12 +69,8 @@
         <input type="text" id="search" placeholder="Search scripts..." onkeyup="searchScripts()">
         <div id="script-list">
             <div class="script">
-                <p>Example Script 1</p>
-                <button class="copy-btn" onclick="copyScript('print(\'Hello, World!\')')">Copy</button>
-            </div>
-            <div class="script">
-                <p>Example Script 2</p>
-                <button class="copy-btn" onclick="copyScript('game.Players.LocalPlayer:Kick(\'Goodbye!\')')">Copy</button>
+                <p>Easy get script</p>
+                <button class="copy-btn" onclick="copyScript('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/customscript.lua\', true))()')">Copy</button>
             </div>
         </div>
     </div>
