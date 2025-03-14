@@ -1,18 +1,13 @@
 
 [
     {
-        "name": "Free Script 1",
-        "description": "A basic script available to everyone.",
+        "name": "TEST",
+        "description": "TEST",
         "free": true
     },
     {
-        "name": "Advanced Script 1",
-        "description": "Powerful script for enhancing gameplay.",
-        "free": false
-    },
-    {
-        "name": "Premium Script 2",
-        "description": "Top-tier automation script with seamless execution.",
+        "name": "TEST2",
+        "description": "TEST FREE",
         "free": false
     }
 ]
