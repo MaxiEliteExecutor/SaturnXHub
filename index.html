@@ -82,10 +82,6 @@
             color: white;
             cursor: pointer;
         }
-        .premium {
-            color: gold;
-            font-weight: bold;
-        }
     </style>
     <script>
         let isLoggedIn = false;
@@ -108,25 +104,33 @@
             container.innerHTML = ''; // Clear existing content
 
             scripts.forEach(script => {
-                // Show free scripts to everyone, all scripts to logged-in users
-                if (script.free || isLoggedIn) {
-                    const card = document.createElement('div');
-                    card.classList.add('script-card');
-                    card.innerHTML = `
-                        <h3>${script.name}</h3>
-                        <p>${script.description}</p>
-                        <button class="copy-btn">Copy Script</button>
-                    `;
-                    container.appendChild(card);
-                }
+                const card = document.createElement('div');
+                card.classList.add('script-card');
+                card.innerHTML = `
+                    <h3>${script.name}</h3>
+                    <p>${script.description}</p>
+                    <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
+                `;
+                container.appendChild(card);
             });
+        }
+
+        // Copy script content to clipboard
+        function copyScript(content) {
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Script copied to clipboard!');
         }
 
         // Login function
         async function login() {
             let username = document.getElementById('username').value;
             let password = document.getElementById('password').value;
-            
+
             try {
                 let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json');
                 let users = await response.json();
@@ -136,13 +140,9 @@
                 if (user) {
                     alert("Login successful!");
                     isLoggedIn = true;
+                    localStorage.setItem('isLoggedIn', true); // Save login state
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('content-container').style.display = 'block';
-                    
-                    if (user.premium) {
-                        document.getElementById('premium-banner').innerText = "Premium User!";
-                        document.getElementById('premium-banner').classList.add("premium");
-                    }
                     renderScripts(); // Re-render scripts after login
                 } else {
                     alert("Invalid credentials!");
@@ -153,23 +153,33 @@
             }
         }
 
-        // Load scripts on page load
-        window.onload = loadScripts;
+        // Check if user is remembered
+        window.onload = () => {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                isLoggedIn = true;
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('content-container').style.display = 'block';
+                renderScripts(); // Load scripts if already logged in
+            } else {
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('content-container').style.display = 'none';
+            }
+        };
     </script>
 </head>
 <body>
     <div class="navbar">
         <h2>Script Hub</h2>
-        <div id="premium-banner"></div>
     </div>
-    
+
     <div id="login-container" class="login-container">
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
+        <label><input type="checkbox" id="rememberMe"> Remember Me</label><br><br>
         <button onclick="login()">Login</button>
     </div>
-    
+
     <div id="content-container" class="container"></div>
 </body>
 </html>
