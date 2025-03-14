@@ -1,10 +1,14 @@
 [
-    {
-        "username": "Maxx26102011",
-        "password": "Maksym26102011",
-    },
-    {
-        "username": "dark42342",
-        "password": "dark42342",
-    }
+  {
+    "username": "dark42342",
+    "password": "dark42342",
+    "premium": true,
+    "subscription_end_date": "2025-12-31"
+  },
+  {
+    "username": "Maxx26102011",
+    "password": "Maxx26102011",
+    "premium": true,
+    "subscription_end_date": "2025-03-01"
+  }
 ]
