@@ -1,13 +1,14 @@
-
 [
-    {
-        "name": "TEST",
-        "description": "TEST",
-        "free": true
-    },
-    {
-        "name": "TEST2",
-        "description": "TEST FREE",
-        "free": false
-    }
+  {
+    "name": "Script 1",
+    "description": "Script 2",
+    "content": "print('Hello, world!')",
+    "free": true
+  },
+  {
+    "name": "Script 2",
+    "description": "Script 2",
+    "content": "print('Another script')",
+    "free": false
+  }
 ]
