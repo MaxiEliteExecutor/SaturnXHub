@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Hub</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0d0d0d;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #252525;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 5px;
+            width: 250px;
+            font-size: 16px;
+        }
+        .container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .script-card {
+            background: linear-gradient(145deg, #1e1e1e, #292929);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 5px 5px 15px #101010, -5px -5px 15px #252525;
+            transition: transform 0.2s;
+        }
+        .script-card:hover {
+            transform: scale(1.05);
+        }
+        .script-card h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+        .script-card p {
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+        .copy-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .copy-btn:hover {
+            background: #0056b3;
+            transform: scale(1.1);
+        }
+        .login-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .login-container input {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+        .login-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        .premium {
+            color: gold;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        async function login() {
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+            
+            try {
+                let response = await fetch('https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/users.json');
+                let users = await response.json();
+                
+                let user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    alert("Login successful!");
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('content-container').style.display = 'block';
+                    
+                    if (user.premium) {
+                        document.getElementById('premium-banner').innerText = "Premium User!";
+                        document.getElementById('premium-banner').classList.add("premium");
+                    }
+                } else {
+                    alert("Invalid credentials!");
+                }
+            } catch (error) {
+                console.error("Error loading users.json", error);
+                alert("Error logging in. Try again later.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Script Hub</h2>
+        <div id="premium-banner"></div>
+    </div>
+    
+    <div id="login-container" class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+    
+    <div id="content-container" class="container" style="display: none;">
+        <div class="script-card">
+            <h3>Advanced Script 1</h3>
+            <p>Powerful script for enhancing gameplay.</p>
+            <button class="copy-btn">Copy Script</button>
+        </div>
+        <div class="script-card">
+            <h3>Exclusive Script 2</h3>
+            <p>Top-tier automation script with seamless execution.</p>
+            <button class="copy-btn">Copy Script</button>
+        </div>
+        <div class="script-card">
+            <h3>Premium Script 3</h3>
+            <p>Fully optimized and secure script for advanced users.</p>
+            <button class="copy-btn">Copy Script</button>
+        </div>
+    </div>
+</body>
+</html>
