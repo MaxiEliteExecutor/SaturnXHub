@@ -86,24 +86,29 @@
     <script>
         let isLoggedIn = false;
         let scripts = [];
+        let freeScripts = [];
 
         // Load scripts when the page loads
         async function loadScripts() {
             try {
                 let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
                 scripts = await response.json();
-                renderScripts();
+
+                // Separate free and premium scripts
+                freeScripts = scripts.filter(script => !script.isPremium);
+                renderScripts(); // Render free scripts
             } catch (error) {
                 console.error("Error loading scripts.json", error);
             }
         }
 
-        // Render scripts
+        // Render free and premium scripts based on login status
         function renderScripts() {
             const container = document.getElementById('content-container');
             container.innerHTML = ''; // Clear existing content
 
-            scripts.forEach(script => {
+            // Always render free scripts
+            freeScripts.forEach(script => {
                 const card = document.createElement('div');
                 card.classList.add('script-card');
                 card.innerHTML = `
@@ -113,6 +118,22 @@
                 `;
                 container.appendChild(card);
             });
+
+            // If logged in, render premium scripts
+            if (isLoggedIn) {
+                scripts.forEach(script => {
+                    if (script.isPremium) {
+                        const card = document.createElement('div');
+                        card.classList.add('script-card');
+                        card.innerHTML = `
+                            <h3>${script.name}</h3>
+                            <p>${script.description}</p>
+                            <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+            }
         }
 
         // Copy script content to clipboard
@@ -143,7 +164,7 @@
 
                     // Check if subscription has expired
                     if (subscriptionEndDate < currentDate) {
-                        alert("Your subscription has expired. Please renew to access the scripts.");
+                        alert("Your subscription has expired. Please renew to access the premium scripts.");
                         return;
                     }
 
