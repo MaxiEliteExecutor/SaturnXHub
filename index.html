@@ -90,6 +90,7 @@
             background: #dc3545;
             color: white;
             cursor: pointer;
+            display: none; /* Hidden by default */
         }
     </style>
     <script>
@@ -97,26 +98,24 @@
         let scripts = [];
         let freeScripts = [];
 
-        // Load scripts when the page loads
+        // Load scripts from JSON
         async function loadScripts() {
             try {
                 let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
                 scripts = await response.json();
-
-                // Separate free and premium scripts
                 freeScripts = scripts.filter(script => !script.isPremium);
-                renderScripts(); // Render free scripts first, then premium if logged in
+                renderScripts();
             } catch (error) {
                 console.error("Error loading scripts.json", error);
             }
         }
 
-        // Render free and premium scripts based on login status
+        // Render scripts based on login status
         function renderScripts() {
             const container = document.getElementById('content-container');
             container.innerHTML = ''; // Clear existing content
 
-            // Always render free scripts
+            // Show free scripts to everyone
             freeScripts.forEach(script => {
                 const card = document.createElement('div');
                 card.classList.add('script-card');
@@ -128,7 +127,7 @@
                 container.appendChild(card);
             });
 
-            // If logged in, render premium scripts
+            // Show premium scripts only if logged in
             if (isLoggedIn) {
                 scripts.forEach(script => {
                     if (script.isPremium) {
@@ -145,15 +144,11 @@
             }
         }
 
-        // Copy script content to clipboard
+        // Copy script to clipboard
         function copyScript(content) {
-            const textarea = document.createElement('textarea');
-            textarea.value = content;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            alert('Script copied to clipboard!');
+            navigator.clipboard.writeText(content)
+                .then(() => alert('Script copied to clipboard!'))
+                .catch(err => console.error('Failed to copy: ', err));
         }
 
         // Login function with subscription check
@@ -169,22 +164,22 @@
                 
                 if (user) {
                     let currentDate = new Date();
-                    let subscriptionEndDate = new Date(user.subscription_end_date); // subscription end date
+                    let subscriptionEndDate = new Date(user.subscription_end_date);
 
-                    // Check if subscription has expired
                     if (subscriptionEndDate < currentDate) {
-                        alert("Your subscription has expired. Please renew to access the premium scripts.");
+                        alert("Your subscription has expired. Please renew to access premium scripts.");
                         return;
                     }
 
                     alert("Login successful!");
                     isLoggedIn = true;
                     if (document.getElementById('rememberMe').checked) {
-                        localStorage.setItem('isLoggedIn', true); // Save login state
+                        localStorage.setItem('isLoggedIn', 'true');
                     }
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('content-container').style.display = 'block';
-                    renderScripts(); // Re-render scripts after login
+                    document.getElementById('logoff-btn').style.display = 'block'; // Show logoff button
+                    renderScripts();
                 } else {
                     alert("Invalid credentials!");
                 }
@@ -196,24 +191,27 @@
 
         // Log off function
         function logoff() {
-            localStorage.removeItem('isLoggedIn'); // Remove login state
+            localStorage.removeItem('isLoggedIn');
             isLoggedIn = false;
             document.getElementById('login-container').style.display = 'block';
             document.getElementById('content-container').style.display = 'none';
-            loadScripts(); // Re-load the free scripts after logoff
+            document.getElementById('logoff-btn').style.display = 'none'; // Hide logoff button
+            renderScripts(); // Render only free scripts
         }
 
-        // Check if user is remembered
+        // Check login status on page load
         window.onload = () => {
             if (localStorage.getItem('isLoggedIn') === 'true') {
                 isLoggedIn = true;
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('content-container').style.display = 'block';
-                renderScripts(); // Load scripts if already logged in
+                document.getElementById('logoff-btn').style.display = 'block'; // Show logoff button
+                loadScripts();
             } else {
                 document.getElementById('login-container').style.display = 'block';
-                document.getElementById('content-container').style.display = 'none';
-                loadScripts(); // Load free scripts even if not logged in
+                document.getElementById('content-container').style.display = 'block'; // Show free scripts
+                document.getElementById('logoff-btn').style.display = 'none';
+                loadScripts();
             }
         };
     </script>
@@ -221,7 +219,7 @@
 <body>
     <div class="navbar">
         <h2>Script Hub</h2>
-        <button class="logoff-btn" onclick="logoff()">Log Off</button>
+        <button id="logoff-btn" class="logoff-btn" onclick="logoff()">Log Off</button>
     </div>
 
     <div id="login-container" class="login-container">
