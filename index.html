@@ -70,14 +70,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
         .login-modal {
             display: none;
             position: fixed;
@@ -110,7 +102,7 @@
         let isLoggedIn = false;
         let scripts = [];
         let freeScripts = [];
-        
+
         // Load scripts when the page loads
         async function loadScripts() {
             try {
@@ -184,7 +176,6 @@
         async function login() {
             let username = document.getElementById('username').value;
             let password = document.getElementById('password').value;
-            let rememberMe = document.getElementById('remember-me').checked;
 
             try {
                 let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json');
@@ -204,10 +195,6 @@
 
                     alert("Login successful!");
                     isLoggedIn = true;
-                    if (rememberMe) {
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('username', username);
-                    }
                     closeLoginModal(); // Close modal on successful login
                     renderScripts(); // Re-render scripts after login
                 } else {
@@ -219,21 +206,8 @@
             }
         }
 
-        // Logout function
-        function logout() {
-            isLoggedIn = false;
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
-            alert('Logged out successfully!');
-            renderScripts();
-        }
-
-        // Check if user is logged in from localStorage
+        // Check if user is remembered
         window.onload = () => {
-            let loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (loggedIn) {
-                isLoggedIn = true;
-            }
             loadScripts(); // Load scripts (both free and premium if logged in)
         };
     </script>
@@ -241,11 +215,7 @@
 <body>
     <div class="navbar">
         <h2>Script Hub</h2>
-        <div>
-            <!-- Login/Logout Button -->
-            <button class="login-btn" onclick="openLoginModal()" id="login-btn" style="display: none;">Login</button>
-            <button class="logout-btn" onclick="logout()" id="logout-btn" style="display: none;">Logout</button>
-        </div>
+        <button class="login-btn" onclick="openLoginModal()">Login</button>
     </div>
 
     <div id="content-container" class="container"></div>
@@ -255,11 +225,9 @@
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <label>
-            <input type="checkbox" id="remember-me"> Remember Me
-        </label>
         <button onclick="login()">Login</button>
         <button onclick="closeLoginModal()">Cancel</button>
     </div>
 </body>
 </html>
+
