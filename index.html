@@ -98,7 +98,7 @@
             }
         }
 
-        // Render scripts based on login status
+        // Render scripts
         function renderScripts() {
             const container = document.getElementById('content-container');
             container.innerHTML = ''; // Clear existing content
@@ -126,7 +126,7 @@
             alert('Script copied to clipboard!');
         }
 
-        // Login function
+        // Login function with subscription check
         async function login() {
             let username = document.getElementById('username').value;
             let password = document.getElementById('password').value;
@@ -138,9 +138,20 @@
                 let user = users.find(u => u.username === username && u.password === password);
                 
                 if (user) {
+                    let currentDate = new Date();
+                    let subscriptionEndDate = new Date(user.subscription_end_date); // subscription end date
+
+                    // Check if subscription has expired
+                    if (subscriptionEndDate < currentDate) {
+                        alert("Your subscription has expired.");
+                        return;
+                    }
+
                     alert("Login successful!");
                     isLoggedIn = true;
-                    localStorage.setItem('isLoggedIn', true); // Save login state
+                    if (document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('isLoggedIn', true); // Save login state
+                    }
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('content-container').style.display = 'block';
                     renderScripts(); // Re-render scripts after login
@@ -183,3 +194,4 @@
     <div id="content-container" class="container"></div>
 </body>
 </html>
+
