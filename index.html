@@ -62,18 +62,33 @@
             background: #0056b3;
             transform: scale(1.1);
         }
-        .login-container {
-            text-align: center;
-            margin-top: 50px;
+        .login-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .login-container input {
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        .login-modal input {
             padding: 10px;
             margin: 5px;
             border-radius: 5px;
             border: none;
             font-size: 16px;
         }
-        .login-container button {
+        .login-modal button {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -82,158 +97,137 @@
             color: white;
             cursor: pointer;
         }
-        .logoff-btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background: #dc3545;
-            color: white;
-            cursor: pointer;
-            display: none; /* Hidden by default */
-        }
     </style>
-<script>
-    let isLoggedIn = false;
-    let scripts = [];
-    let freeScripts = [];
+    <script>
+        let isLoggedIn = false;
+        let scripts = [];
+        let freeScripts = [];
 
-    // Load scripts when the page loads
-    async function loadScripts() {
-        try {
-            let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
-            scripts = await response.json();
+        // Load scripts when the page loads
+        async function loadScripts() {
+            try {
+                let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json');
+                scripts = await response.json();
 
-            // Separate free and premium scripts
-            freeScripts = scripts.filter(script => !script.isPremium);
-            renderScripts(); // Render free scripts first, then premium if logged in
-        } catch (error) {
-            console.error("Error loading scripts.json", error);
-        }
-    }
-
-    // Render free and premium scripts based on login status
-    function renderScripts() {
-        const container = document.getElementById('content-container');
-        container.innerHTML = ''; // Clear existing content
-
-        // Always render free scripts
-        freeScripts.forEach(script => {
-            const card = document.createElement('div');
-            card.classList.add('script-card');
-            card.innerHTML = `
-                <h3>${script.name}</h3>
-                <p>${script.description}</p>
-                <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
-            `;
-            container.appendChild(card);
-        });
-
-        // If logged in, render premium scripts
-        if (isLoggedIn) {
-            scripts.forEach(script => {
-                if (script.isPremium) {
-                    const card = document.createElement('div');
-                    card.classList.add('script-card');
-                    card.innerHTML = `
-                        <h3>${script.name}</h3>
-                        <p>${script.description}</p>
-                        <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
-                    `;
-                    container.appendChild(card);
-                }
-            });
-        }
-    }
-
-    // Copy script content to clipboard
-    function copyScript(content) {
-        const textarea = document.createElement('textarea');
-        textarea.value = content;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Script copied to clipboard!');
-    }
-
-    // Login function with subscription check
-    async function login() {
-        let username = document.getElementById('username').value;
-        let password = document.getElementById('password').value;
-
-        try {
-            let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json');
-            let users = await response.json();
-            
-            let user = users.find(u => u.username === username && u.password === password);
-            
-            if (user) {
-                let currentDate = new Date();
-                let subscriptionEndDate = new Date(user.subscription_end_date); // subscription end date
-
-                // Check if subscription has expired
-                if (subscriptionEndDate < currentDate) {
-                    alert("Your subscription has expired. Please renew to access the premium scripts.");
-                    return;
-                }
-
-                alert("Login successful!");
-                isLoggedIn = true;
-                if (document.getElementById('rememberMe').checked) {
-                    localStorage.setItem('isLoggedIn', true); // Save login state
-                }
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('content-container').style.display = 'block';
-                renderScripts(); // Re-render scripts after login
-            } else {
-                alert("Invalid credentials!");
+                // Separate free and premium scripts
+                freeScripts = scripts.filter(script => !script.isPremium);
+                renderScripts(); // Render free scripts first, then premium if logged in
+            } catch (error) {
+                console.error("Error loading scripts.json", error);
             }
-        } catch (error) {
-            console.error("Error loading users.json", error);
-            alert("Error logging in. Try again later.");
         }
-    }
 
-    // Log off function
-    function logoff() {
-        localStorage.removeItem('isLoggedIn'); // Remove login state
-        isLoggedIn = false;
-        document.getElementById('login-container').style.display = 'block';
-        document.getElementById('content-container').style.display = 'none';
-        loadScripts(); // Re-load the free scripts after logoff
-    }
+        // Render free and premium scripts based on login status
+        function renderScripts() {
+            const container = document.getElementById('content-container');
+            container.innerHTML = ''; // Clear existing content
 
-    // Check if user is remembered
-    window.onload = () => {
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            isLoggedIn = true;
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('content-container').style.display = 'block';
-            renderScripts(); // Load scripts if already logged in
-        } else {
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('content-container').style.display = 'none';
-            loadScripts(); // Load free scripts even if not logged in
+            // Always render free scripts
+            freeScripts.forEach(script => {
+                const card = document.createElement('div');
+                card.classList.add('script-card');
+                card.innerHTML = `
+                    <h3>${script.name}</h3>
+                    <p>${script.description}</p>
+                    <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
+                `;
+                container.appendChild(card);
+            });
+
+            // If logged in, render premium scripts
+            if (isLoggedIn) {
+                scripts.forEach(script => {
+                    if (script.isPremium) {
+                        const card = document.createElement('div');
+                        card.classList.add('script-card');
+                        card.innerHTML = `
+                            <h3>${script.name}</h3>
+                            <p>${script.description}</p>
+                            <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+            }
         }
-    };
-</script>
 
+        // Copy script content to clipboard
+        function copyScript(content) {
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Script copied to clipboard!');
+        }
+
+        // Open login modal
+        function openLoginModal() {
+            document.getElementById('login-modal').style.display = 'block';
+        }
+
+        // Close login modal
+        function closeLoginModal() {
+            document.getElementById('login-modal').style.display = 'none';
+        }
+
+        // Login function with subscription check
+        async function login() {
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+
+            try {
+                let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json');
+                let users = await response.json();
+                
+                let user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    let currentDate = new Date();
+                    let subscriptionEndDate = new Date(user.subscription_end_date); // subscription end date
+
+                    // Check if subscription has expired
+                    if (subscriptionEndDate < currentDate) {
+                        alert("Your subscription has expired. Please renew to access the premium scripts.");
+                        return;
+                    }
+
+                    alert("Login successful!");
+                    isLoggedIn = true;
+                    closeLoginModal(); // Close modal on successful login
+                    renderScripts(); // Re-render scripts after login
+                } else {
+                    alert("Invalid credentials!");
+                }
+            } catch (error) {
+                console.error("Error loading users.json", error);
+                alert("Error logging in. Try again later.");
+            }
+        }
+
+        // Check if user is remembered
+        window.onload = () => {
+            loadScripts(); // Load scripts (both free and premium if logged in)
+        };
+    </script>
 </head>
 <body>
     <div class="navbar">
         <h2>Script Hub</h2>
-        <button id="logoff-btn" class="logoff-btn" onclick="logoff()">Log Off</button>
-    </div>
-
-    <div id="login-container" class="login-container">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <label><input type="checkbox" id="rememberMe"> Remember Me</label><br><br>
-        <button onclick="login()">Login</button>
+        <button class="login-btn" onclick="openLoginModal()">Login</button>
     </div>
 
     <div id="content-container" class="container"></div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button onclick="closeLoginModal()">Cancel</button>
+    </div>
 </body>
 </html>
+
