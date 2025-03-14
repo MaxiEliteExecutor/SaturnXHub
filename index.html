@@ -109,7 +109,7 @@
             let password = document.getElementById('password').value;
             
             try {
-                let response = await fetch('https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO/main/users.json');
+                let response = await fetch('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json');
                 let users = await response.json();
                 
                 let user = users.find(u => u.username === username && u.password === password);
