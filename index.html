@@ -105,7 +105,7 @@
 
                 // Separate free and premium scripts
                 freeScripts = scripts.filter(script => !script.isPremium);
-                renderScripts(); // Render free scripts
+                renderScripts(); // Render free scripts first, then premium if logged in
             } catch (error) {
                 console.error("Error loading scripts.json", error);
             }
