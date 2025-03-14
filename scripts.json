@@ -2,13 +2,13 @@
     {
         "name": "Free Script 1",
         "description": "This is a free script.",
-        "content": "print('Hello World')",
+        "content": "print('Hello, World!')",
         "isPremium": false
     },
     {
         "name": "Premium Script 1",
         "description": "This is a premium script.",
-        "content": "print('Premium')",
+        "content": "print('This is premium!')",
         "isPremium": true
     }
 ]
