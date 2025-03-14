@@ -1,17 +1,12 @@
 [
     {
-        "username": "admin",
-        "password": "12345",
+        "username": "Maxx26102011",
+        "password": "Maksym26102011",
         "premium": true
     },
     {
-        "username": "user1",
-        "password": "pass123",
-        "premium": false
-    },
-    {
-        "username": "premiumuser",
-        "password": "securepass",
+        "username": "dark42342",
+        "password": "dark42342",
         "premium": true
     }
 ]
