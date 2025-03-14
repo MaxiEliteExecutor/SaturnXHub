@@ -82,6 +82,15 @@
             color: white;
             cursor: pointer;
         }
+        .logoff-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #dc3545;
+            color: white;
+            cursor: pointer;
+        }
     </style>
     <script>
         let isLoggedIn = false;
@@ -185,6 +194,15 @@
             }
         }
 
+        // Log off function
+        function logoff() {
+            localStorage.removeItem('isLoggedIn'); // Remove login state
+            isLoggedIn = false;
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('content-container').style.display = 'none';
+            loadScripts(); // Re-load the free scripts after logoff
+        }
+
         // Check if user is remembered
         window.onload = () => {
             if (localStorage.getItem('isLoggedIn') === 'true') {
@@ -203,6 +221,7 @@
 <body>
     <div class="navbar">
         <h2>Script Hub</h2>
+        <button class="logoff-btn" onclick="logoff()">Log Off</button>
     </div>
 
     <div id="login-container" class="login-container">
