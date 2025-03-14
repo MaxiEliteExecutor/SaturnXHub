@@ -6,39 +6,60 @@
     <title>ARC Script Hub</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
             color: white;
             text-align: center;
+            margin: 0;
+            padding: 0;
         }
         .container {
             max-width: 600px;
             margin: 50px auto;
-            background: #292929;
+            background: #1e1e1e;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
         }
         input {
-            width: 90%;
-            padding: 10px;
-            margin-bottom: 10px;
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 16px;
+            outline: none;
         }
         .script {
-            background: #383838;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
+            background: #252525;
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .script:hover {
+            transform: scale(1.02);
         }
         .copy-btn {
             background: #008CBA;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background: #0078a0;
         }
     </style>
 </head>
@@ -68,7 +89,7 @@
             let scripts = document.querySelectorAll(".script");
             scripts.forEach(script => {
                 let text = script.textContent.toLowerCase();
-                script.style.display = text.includes(input) ? "block" : "none";
+                script.style.display = text.includes(input) ? "flex" : "none";
             });
         }
     </script>
