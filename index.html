@@ -120,7 +120,7 @@
             freeScripts.forEach(script => {
                 const card = document.createElement('div');
                 card.classList.add('script-card');
-                card.innerHTML = `
+                card.innerHTML = ` 
                     <h3>${script.name}</h3>
                     <p>${script.description}</p>
                     <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
@@ -134,7 +134,7 @@
                     if (script.isPremium) {
                         const card = document.createElement('div');
                         card.classList.add('script-card');
-                        card.innerHTML = `
+                        card.innerHTML = ` 
                             <h3>${script.name}</h3>
                             <p>${script.description}</p>
                             <button class="copy-btn" onclick="copyScript('${script.content}')">Copy Script</button>
