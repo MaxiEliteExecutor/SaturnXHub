@@ -1,14 +1,14 @@
 [
-  {
-    "name": "Script 1",
-    "description": "Script 2",
-    "content": "print('Hello, world!')",
-    "free": true
-  },
-  {
-    "name": "Script 2",
-    "description": "Script 2",
-    "content": "print('Another script')",
-    "free": false
-  }
+    {
+        "name": "Free Script 1",
+        "description": "This is a free script.",
+        "content": "print('Hello World')",
+        "isPremium": false
+    },
+    {
+        "name": "Premium Script 1",
+        "description": "This is a premium script.",
+        "content": "print('Premium')",
+        "isPremium": true
+    }
 ]
