@@ -9,12 +9,7 @@
             "name": "Premium Script 1",
             "code": "print('This is a premium script!')",
             "premium": true
-        },
-        {
-            "name": "Another Free Script",
-            "code": "print('Hello, World!')",
-            "premium": false
-        },
+        }
         {
             "name": "Premium Script 2",
             "code": "print('Another premium script!')",
