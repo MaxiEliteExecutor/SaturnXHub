@@ -5,96 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARC Script Hub</title>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #121212;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        input {
-            width: calc(100% - 20px);
-            padding: 12px;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 8px;
-            background: #2a2a2a;
-            color: white;
-            font-size: 16px;
-            outline: none;
-        }
-        .script {
-            background: #252525;
-            padding: 15px;
-            margin: 8px 0;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s;
-        }
-        .script.premium {
-            background: #3a2f4a; /* Different color for premium scripts */
-        }
-        .script:hover {
-            transform: scale(1.02);
-        }
-        .copy-btn {
-            background: #008CBA;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        .copy-btn:hover {
-            background: #0078a0;
-        }
-        #login-container {
-            margin-bottom: 20px;
-        }
-        #script-container {
-            display: block; /* Visible by default for non-logged-in users */
-        }
-        .login-btn, .logout-btn {
-            background: #008CBA;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .login-btn:hover, .logout-btn:hover {
-            background: #0078a0;
-        }
-        #user-status {
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #121212; color: white; text-align: center; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 50px auto; background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1); }
+        h1 { margin-bottom: 20px; }
+        input { width: calc(100% - 20px); padding: 12px; margin-bottom: 15px; border: none; border-radius: 8px; background: #2a2a2a; color: white; font-size: 16px; outline: none; }
+        .script { background: #252525; padding: 15px; margin: 8px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
+        .script.premium { background: #3a2f4a; }
+        .script:hover { transform: scale(1.02); }
+        .copy-btn { background: #008CBA; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+        .copy-btn:hover { background: #0078a0; }
+        #login-container { margin-bottom: 20px; }
+        #script-container { display: block; }
+        .login-btn, .logout-btn { background: #008CBA; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
+        .login-btn:hover, .logout-btn:hover { background: #0078a0; }
+        #user-status { margin-bottom: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>ARC Script Hub</h1>
-        
-        <!-- Login Form and Status -->
         <div id="login-container">
             <div id="user-status">Not logged in (Premium scripts hidden)</div>
             <input type="text" id="username" placeholder="Username">
@@ -102,8 +31,6 @@
             <button class="login-btn" onclick="login()">Login</button>
             <button class="logout-btn" onclick="logout()" style="display: none;">Logout</button>
         </div>
-
-        <!-- Script Hub -->
         <div id="script-container">
             <input type="text" id="search" placeholder="Search scripts..." onkeyup="searchScripts()">
             <div id="script-list"></div>
@@ -113,20 +40,23 @@
     <script>
         let isLoggedIn = false;
 
-        // Load scripts on page load for non-logged-in users
         window.onload = function() {
             fetchScripts();
         };
 
-        // Login function with JSON validation
         function login() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            const loginJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json"; // Replace with your GitHub URL
+            const loginJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json";
 
+            console.log("Attempting login with:", username, password);
             fetch(loginJsonUrl)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log("Fetched users:", data);
                     const user = data.users.find(u => u.username === username && u.password === password);
                     if (user) {
                         isLoggedIn = true;
@@ -135,18 +65,17 @@
                         document.getElementById("password").style.display = "none";
                         document.querySelector(".login-btn").style.display = "none";
                         document.querySelector(".logout-btn").style.display = "block";
-                        fetchScripts(); // Refresh scripts to show premium ones
+                        fetchScripts();
                     } else {
                         alert("Invalid username or password!");
                     }
                 })
                 .catch(error => {
-                    console.error("Error fetching login data:", error);
-                    alert("Failed to validate login. Please try again.");
+                    console.error("Login error:", error);
+                    alert("Failed to validate login: " + error.message);
                 });
         }
 
-        // Logout function
         function logout() {
             isLoggedIn = false;
             document.getElementById("user-status").textContent = "Not logged in (Premium scripts hidden)";
@@ -156,17 +85,15 @@
             document.querySelector(".logout-btn").style.display = "none";
             document.getElementById("username").value = "";
             document.getElementById("password").value = "";
-            fetchScripts(); // Refresh scripts to hide premium ones
+            fetchScripts();
         }
 
-        // Copy script to clipboard
         function copyScript(script) {
             navigator.clipboard.writeText(script).then(() => {
                 alert('Script copied to clipboard!');
             });
         }
 
-        // Search scripts
         function searchScripts() {
             let input = document.getElementById("search").value.toLowerCase();
             let scripts = document.querySelectorAll(".script");
@@ -176,16 +103,19 @@
             });
         }
 
-        // Fetch scripts from GitHub JSON file
         function fetchScripts() {
-            const githubJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json"; // Replace with your GitHub URL
+            const githubJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json";
+            console.log("Fetching scripts from:", githubJsonUrl);
             fetch(githubJsonUrl)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log("Fetched scripts:", data);
                     const scriptList = document.getElementById("script-list");
-                    scriptList.innerHTML = ""; // Clear existing content
+                    scriptList.innerHTML = "";
                     data.scripts.forEach(script => {
-                        // Show all scripts for logged-in users, only non-premium for non-logged-in
                         if (isLoggedIn || !script.premium) {
                             const scriptDiv = document.createElement("div");
                             scriptDiv.className = `script ${script.premium ? 'premium' : ''}`;
@@ -199,7 +129,7 @@
                 })
                 .catch(error => {
                     console.error("Error fetching scripts:", error);
-                    alert("Failed to load scripts.");
+                    alert("Failed to load scripts: " + error.message);
                 });
         }
     </script>
