@@ -1,19 +1,7 @@
 {
     "scripts": [
-        {
-            "name": "Easy Get Script",
-            "code": "loadstring(game:HttpGet('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/customscript.lua', true))()",
-            "premium": false
-        },
-        {
-            "name": "Premium Script 1",
-            "code": "print('This is a premium script!')",
-            "premium": true
-        }
-        {
-            "name": "Premium Script 2",
-            "code": "print('Another premium script!')",
-            "premium": true
-        }
+        {"name": "Easy Get Script", "code": "loadstring(game:HttpGet('https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/customscript.lua', true))()", "premium": false},
+        {"name": "Premium Script 1", "code": "print('Premium')", "premium": true},
+        {"name": "Another Free Script", "code": "print('Hello')", "premium": true}
     ]
 }
