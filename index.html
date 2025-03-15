@@ -45,6 +45,9 @@
             align-items: center;
             transition: transform 0.2s;
         }
+        .script.premium {
+            background: #3a2f4a; /* Different color for premium scripts */
+        }
         .script:hover {
             transform: scale(1.02);
         }
@@ -61,25 +64,109 @@
         .copy-btn:hover {
             background: #0078a0;
         }
+        #login-container {
+            margin-bottom: 20px;
+        }
+        #script-container {
+            display: block; /* Visible by default for non-logged-in users */
+        }
+        .login-btn, .logout-btn {
+            background: #008CBA;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .login-btn:hover, .logout-btn:hover {
+            background: #0078a0;
+        }
+        #user-status {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>ARC Script Hub</h1>
-        <input type="text" id="search" placeholder="Search scripts..." onkeyup="searchScripts()">
-        <div id="script-list">
-            <div class="script">
-                <p>Easy get script</p>
-                <button class="copy-btn" onclick="copyScript('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/customscript.lua\', true))()')">Copy</button>
-            </div>
+        
+        <!-- Login Form and Status -->
+        <div id="login-container">
+            <div id="user-status">Not logged in (Premium scripts hidden)</div>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button class="login-btn" onclick="login()">Login</button>
+            <button class="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+        </div>
+
+        <!-- Script Hub -->
+        <div id="script-container">
+            <input type="text" id="search" placeholder="Search scripts..." onkeyup="searchScripts()">
+            <div id="script-list"></div>
         </div>
     </div>
+
     <script>
+        let isLoggedIn = false;
+
+        // Load scripts on page load for non-logged-in users
+        window.onload = function() {
+            fetchScripts();
+        };
+
+        // Login function with JSON validation
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const loginJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json"; // Replace with your GitHub URL
+
+            fetch(loginJsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const user = data.users.find(u => u.username === username && u.password === password);
+                    if (user) {
+                        isLoggedIn = true;
+                        document.getElementById("user-status").textContent = `Logged in as ${username}`;
+                        document.getElementById("username").style.display = "none";
+                        document.getElementById("password").style.display = "none";
+                        document.querySelector(".login-btn").style.display = "none";
+                        document.querySelector(".logout-btn").style.display = "block";
+                        fetchScripts(); // Refresh scripts to show premium ones
+                    } else {
+                        alert("Invalid username or password!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching login data:", error);
+                    alert("Failed to validate login. Please try again.");
+                });
+        }
+
+        // Logout function
+        function logout() {
+            isLoggedIn = false;
+            document.getElementById("user-status").textContent = "Not logged in (Premium scripts hidden)";
+            document.getElementById("username").style.display = "block";
+            document.getElementById("password").style.display = "block";
+            document.querySelector(".login-btn").style.display = "block";
+            document.querySelector(".logout-btn").style.display = "none";
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            fetchScripts(); // Refresh scripts to hide premium ones
+        }
+
+        // Copy script to clipboard
         function copyScript(script) {
             navigator.clipboard.writeText(script).then(() => {
                 alert('Script copied to clipboard!');
             });
         }
+
+        // Search scripts
         function searchScripts() {
             let input = document.getElementById("search").value.toLowerCase();
             let scripts = document.querySelectorAll(".script");
@@ -87,6 +174,33 @@
                 let text = script.textContent.toLowerCase();
                 script.style.display = text.includes(input) ? "flex" : "none";
             });
+        }
+
+        // Fetch scripts from GitHub JSON file
+        function fetchScripts() {
+            const githubJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json"; // Replace with your GitHub URL
+            fetch(githubJsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const scriptList = document.getElementById("script-list");
+                    scriptList.innerHTML = ""; // Clear existing content
+                    data.scripts.forEach(script => {
+                        // Show all scripts for logged-in users, only non-premium for non-logged-in
+                        if (isLoggedIn || !script.premium) {
+                            const scriptDiv = document.createElement("div");
+                            scriptDiv.className = `script ${script.premium ? 'premium' : ''}`;
+                            scriptDiv.innerHTML = `
+                                <p>${script.name}${script.premium ? ' (Premium)' : ''}</p>
+                                <button class="copy-btn" onclick="copyScript('${script.code}')">Copy</button>
+                            `;
+                            scriptList.appendChild(scriptDiv);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching scripts:", error);
+                    alert("Failed to load scripts.");
+                });
         }
     </script>
 </body>
