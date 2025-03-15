@@ -1,12 +1,12 @@
-[
-    {
-        "username": "user1",
-        "password": "password123",
-        "subscription_end_date": "2025-12-31T23:59:59Z"
-    },
-    {
-        "username": "user2",
-        "password": "password456",
-        "subscription_end_date": "2024-05-01T23:59:59Z"
-    }
-]
+{
+    "users": [
+        {
+            "username": "admin",
+            "password": "password123"
+        },
+        {
+            "username": "user1",
+            "password": "abc456"
+        }
+    ]
+}
