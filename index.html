@@ -5,20 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARC Script Hub</title>
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #121212; color: white; text-align: center; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 50px auto; background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1); }
-        h1 { margin-bottom: 20px; }
-        input { width: calc(100% - 20px); padding: 12px; margin-bottom: 15px; border: none; border-radius: 8px; background: #2a2a2a; color: white; font-size: 16px; outline: none; }
-        .script { background: #252525; padding: 15px; margin: 8px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
-        .script.premium { background: #3a2f4a; }
-        .script:hover { transform: scale(1.02); }
-        .copy-btn { background: #008CBA; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
-        .copy-btn:hover { background: #0078a0; }
-        #login-container { margin-bottom: 20px; }
-        #script-container { display: block; }
-        .login-btn, .logout-btn { background: #008CBA; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
-        .login-btn:hover, .logout-btn:hover { background: #0078a0; }
-        #user-status { margin-bottom: 20px; font-size: 14px; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .script {
+            background: #252525;
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .script.premium {
+            background: #3a2f4a;
+        }
+        .script:hover {
+            transform: scale(1.02);
+        }
+        .copy-btn {
+            background: #008CBA;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background: #0078a0;
+        }
+        #login-container {
+            margin-bottom: 20px;
+        }
+        #script-container {
+            display: block;
+        }
+        .login-btn, .logout-btn {
+            background: #008CBA;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .login-btn:hover, .logout-btn:hover {
+            background: #0078a0;
+        }
+        #user-status {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -28,29 +97,48 @@
             <div id="user-status">Not logged in (Premium scripts hidden)</div>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
-            <button class="login-btn" onclick="login()">Login</button>
-            <button class="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            <button class="login-btn">Login</button>
+            <button class="logout-btn" style="display: none;">Logout</button>
         </div>
         <div id="script-container">
-            <input type="text" id="search" placeholder="Search scripts..." onkeyup="searchScripts()">
+            <input type="text" id="search" placeholder="Search scripts...">
             <div id="script-list"></div>
         </div>
     </div>
 
     <script>
+        // State
         let isLoggedIn = false;
+        const usersUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json";
+        const scriptsUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json";
 
-        window.onload = function() {
-            fetchScripts();
-        };
+        // DOM Elements
+        const userStatus = document.getElementById("user-status");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        const loginBtn = document.querySelector(".login-btn");
+        const logoutBtn = document.querySelector(".logout-btn");
+        const searchInput = document.getElementById("search");
+        const scriptList = document.getElementById("script-list");
 
+        // Event Listeners
+        window.addEventListener("load", fetchScripts);
+        loginBtn.addEventListener("click", login);
+        logoutBtn.addEventListener("click", logout);
+        searchInput.addEventListener("keyup", searchScripts);
+
+        // Functions
         function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const loginJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/users.json";
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!username || !password) {
+                alert("Please enter both username and password!");
+                return;
+            }
 
             console.log("Attempting login with:", username, password);
-            fetch(loginJsonUrl)
+            fetch(usersUrl)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                     return response.json();
@@ -60,11 +148,11 @@
                     const user = data.users.find(u => u.username === username && u.password === password);
                     if (user) {
                         isLoggedIn = true;
-                        document.getElementById("user-status").textContent = `Logged in as ${username}`;
-                        document.getElementById("username").style.display = "none";
-                        document.getElementById("password").style.display = "none";
-                        document.querySelector(".login-btn").style.display = "none";
-                        document.querySelector(".logout-btn").style.display = "block";
+                        userStatus.textContent = `Logged in as ${username}`;
+                        usernameInput.style.display = "none";
+                        passwordInput.style.display = "none";
+                        loginBtn.style.display = "none";
+                        logoutBtn.style.display = "block";
                         fetchScripts();
                     } else {
                         alert("Invalid username or password!");
@@ -78,51 +166,62 @@
 
         function logout() {
             isLoggedIn = false;
-            document.getElementById("user-status").textContent = "Not logged in (Premium scripts hidden)";
-            document.getElementById("username").style.display = "block";
-            document.getElementById("password").style.display = "block";
-            document.querySelector(".login-btn").style.display = "block";
-            document.querySelector(".logout-btn").style.display = "none";
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
+            userStatus.textContent = "Not logged in (Premium scripts hidden)";
+            usernameInput.style.display = "block";
+            passwordInput.style.display = "block";
+            loginBtn.style.display = "block";
+            logoutBtn.style.display = "none";
+            usernameInput.value = "";
+            passwordInput.value = "";
             fetchScripts();
         }
 
-        function copyScript(script) {
-            navigator.clipboard.writeText(script).then(() => {
-                alert('Script copied to clipboard!');
-            });
+        function copyScript(scriptText) {
+            console.log("Copying script:", scriptText);
+            navigator.clipboard.writeText(scriptText)
+                .then(() => {
+                    alert("Script copied to clipboard!");
+                })
+                .catch(error => {
+                    console.error("Clipboard error:", error);
+                    alert("Failed to copy script: " + error.message);
+                });
         }
 
         function searchScripts() {
-            let input = document.getElementById("search").value.toLowerCase();
-            let scripts = document.querySelectorAll(".script");
+            const query = searchInput.value.toLowerCase();
+            const scripts = scriptList.querySelectorAll(".script");
             scripts.forEach(script => {
-                let text = script.textContent.toLowerCase();
-                script.style.display = text.includes(input) ? "flex" : "none";
+                const text = script.querySelector("p").textContent.toLowerCase();
+                script.style.display = text.includes(query) ? "flex" : "none";
             });
         }
 
         function fetchScripts() {
-            const githubJsonUrl = "https://raw.githubusercontent.com/MaxiEliteExecutor/SaturnXHub/refs/heads/main/scripts.json";
-            console.log("Fetching scripts from:", githubJsonUrl);
-            fetch(githubJsonUrl)
+            console.log("Fetching scripts from:", scriptsUrl);
+            fetch(scriptsUrl)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                     return response.json();
                 })
                 .then(data => {
                     console.log("Fetched scripts:", data);
-                    const scriptList = document.getElementById("script-list");
                     scriptList.innerHTML = "";
                     data.scripts.forEach(script => {
                         if (isLoggedIn || !script.premium) {
                             const scriptDiv = document.createElement("div");
-                            scriptDiv.className = `script ${script.premium ? 'premium' : ''}`;
-                            scriptDiv.innerHTML = `
-                                <p>${script.name}${script.premium ? ' (Premium)' : ''}</p>
-                                <button class="copy-btn" onclick="copyScript('${script.code}')">Copy</button>
-                            `;
+                            scriptDiv.className = `script ${script.premium ? "premium" : ""}`;
+                            
+                            const scriptName = document.createElement("p");
+                            scriptName.textContent = `${script.name}${script.premium ? " (Premium)" : ""}`;
+                            
+                            const copyBtn = document.createElement("button");
+                            copyBtn.className = "copy-btn";
+                            copyBtn.textContent = "Copy";
+                            copyBtn.addEventListener("click", () => copyScript(script.code));
+                            
+                            scriptDiv.appendChild(scriptName);
+                            scriptDiv.appendChild(copyBtn);
                             scriptList.appendChild(scriptDiv);
                         }
                     });
